@@ -1,0 +1,4 @@
+﻿data/source/
+__pycache__/
+*.pyc
+*.docx

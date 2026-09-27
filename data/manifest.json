@@ -1,0 +1,14 @@
+{
+  "dataset": "NOAA ETOPO 2022 v1 surface, 60 arc-seconds",
+  "datum": "EGM2008",
+  "rows": 10800,
+  "columns": 21600,
+  "pointSampling": "nearest native cell; elevation rounded to 1 m, geoid to 0.01 m",
+  "display": "10 arc-minute mean with hillshade",
+  "oceanMask": "connected negative overview cells; approximate at coasts",
+  "source": "https://doi.org/10.25921/fd45-gt74",
+  "files": [
+    "ETOPO_2022_v1_60s_N90W180_geoid.tif",
+    "ETOPO_2022_v1_60s_N90W180_surface.tif"
+  ]
+}

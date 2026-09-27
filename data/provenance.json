@@ -1,0 +1,19 @@
+{
+  "retrieved": "2026-09-27",
+  "provider": "NOAA NCEI",
+  "doi": "10.25921/fd45-gt74",
+  "files": [
+    {
+      "file": "ETOPO_2022_v1_60s_N90W180_geoid.tif",
+      "bytes": 426406081,
+      "sha256": "7e93f8f14a0030207228af68be37b27d7f8cdfb5ab71fe1393e121fc45adfa3f",
+      "url": "https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO2022/data/60s/60s_geoid_gtif/ETOPO_2022_v1_60s_N90W180_geoid.tif"
+    },
+    {
+      "file": "ETOPO_2022_v1_60s_N90W180_surface.tif",
+      "bytes": 465969062,
+      "sha256": "9d27d4b8ea8e76977e2988bca667d7c8fa68b927355feffcddd6b4875a7fd08e",
+      "url": "https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO2022/data/60s/60s_surface_elev_gtif/ETOPO_2022_v1_60s_N90W180_surface.tif"
+    }
+  ]
+}
