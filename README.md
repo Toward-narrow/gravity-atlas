@@ -8,3 +8,7 @@ files are excluded because of their size.
 
 The terrain sets observation height; the app does not calculate a full
 measured gravity anomaly field or automatically integrate terrain mass.
+
+---
+
+<sub>mj...mj❤Peter/EL</sub>
