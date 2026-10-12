@@ -41,6 +41,7 @@ function drawGlobe(){
   const {ctx:c,w,h}=surface('globe'), immersive=!!window.WorldFactors, R=immersive?Math.min(w*.36,h*.31):Math.min(w*.405,h*.445), cx=immersive?w*.47:w/2,cy=immersive?h*.36:h/2;globeSize={R,cx,cy,w,h};
   const vp=view.lat*RAD, vl=view.lon*RAD;
   function project(lon,lat){const p=lat*RAD,l=lon*RAD-vl;return [cx+R*Math.cos(p)*Math.sin(l),cy-R*(Math.cos(vp)*Math.sin(p)-Math.sin(vp)*Math.cos(p)*Math.cos(l)),Math.sin(vp)*Math.sin(p)+Math.cos(vp)*Math.cos(p)*Math.cos(l)]}
+  if(window.GravityField?.potatoActive()){window.GravityField.drawPotato(c,project,globeSize);return}
   const halo=c.createRadialGradient(cx,cy,R*.92,cx,cy,R*1.15);halo.addColorStop(0,'#57aeb32a');halo.addColorStop(1,'#57aeb300');c.fillStyle=halo;c.beginPath();c.arc(cx,cy,R*1.15,0,Math.PI*2);c.fill();
   const ocean=c.createRadialGradient(cx-R*.3,cy-R*.35,0,cx,cy,R*1.1);ocean.addColorStop(0,'#1c3d49');ocean.addColorStop(.7,'#122a37');ocean.addColorStop(1,'#091521');c.fillStyle=ocean;c.beginPath();c.arc(cx,cy,R,0,Math.PI*2);c.fill();
   c.save();c.beginPath();c.arc(cx,cy,R,0,Math.PI*2);c.clip();
@@ -59,7 +60,7 @@ function drawGlobe(){
 let drag=null;
 $('globe').addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,lon:view.lon,lat:view.lat,moved:false};$('globe').setPointerCapture(e.pointerId)});
 $('globe').addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.hypot(dx,dy)>5)drag.moved=true;if(drag.moved){view.lon=drag.lon-dx*.35;view.lat=Math.max(-89.9,Math.min(89.9,drag.lat+dy*.35));drawGlobe()}});
-$('globe').addEventListener('pointerup',e=>{if(!drag)return;if(!drag.moved){const box=$('globe').getBoundingClientRect(),{R,cx,cy}=globeSize,x=(e.clientX-box.left-cx)/R,y=-(e.clientY-box.top-cy)/R,r=Math.hypot(x,y);if(r<=1){const z=Math.sqrt(1-r*r),p=view.lat*RAD;const lat=Math.asin(Math.max(-1,Math.min(1,y*Math.cos(p)+z*Math.sin(p))))/RAD;let lon=view.lon+Math.atan2(x,z*Math.cos(p)-y*Math.sin(p))/RAD;lon=((lon+180)%360+360)%360-180;setState({lat:+lat.toFixed(4),lon:+lon.toFixed(4)})}}drag=null});
+$('globe').addEventListener('pointerup',e=>{if(!drag)return;if(!drag.moved){const box=$('globe').getBoundingClientRect(),{R,cx,cy}=globeSize,x=(e.clientX-box.left-cx)/R,y=-(e.clientY-box.top-cy)/R,r=Math.hypot(x,y),potato=!!window.GravityField?.potatoActive();if(r<=(potato?1.35:1)){const scale=r>1?1/r:1,xx=x*scale,yy=y*scale,z=Math.sqrt(Math.max(0,1-xx*xx-yy*yy)),p=view.lat*RAD;const lat=Math.asin(Math.max(-1,Math.min(1,yy*Math.cos(p)+z*Math.sin(p))))/RAD;let lon=view.lon+Math.atan2(xx,z*Math.cos(p)-yy*Math.sin(p))/RAD;lon=((lon+180)%360+360)%360-180;setState({lat:+lat.toFixed(4),lon:+lon.toFixed(4)})}}drag=null});
 $('globe').addEventListener('pointercancel',()=>drag=null);
 function arrow(c,x,y,dx,dy,color,width=2){if(Math.hypot(dx,dy)<.3)return;c.strokeStyle=color;c.fillStyle=color;c.lineWidth=width;c.beginPath();c.moveTo(x,y);c.lineTo(x+dx,y+dy);c.stroke();const a=Math.atan2(dy,dx),len=7;c.beginPath();c.moveTo(x+dx,y+dy);c.lineTo(x+dx-len*Math.cos(a-.45),y+dy-len*Math.sin(a-.45));c.lineTo(x+dx-len*Math.cos(a+.45),y+dy-len*Math.sin(a+.45));c.closePath();c.fill()}
 function drawVectors(){

@@ -1,0 +1,15 @@
+{
+  "dataset": "GFZ EIGEN-6C4",
+  "citation": "Förste et al. (2014), GFZ Data Services, DOI 10.5880/icgem.2015.1",
+  "license": "CC BY 4.0",
+  "source": "https://doi.org/10.5880/icgem.2015.1",
+  "sourceSHA256": "356396b08e8b214e02ec52d249c5492a632bbf8e37c5db1ad61bdeb6716d5320",
+  "sphericalHarmonics": "degrees 0 through 179",
+  "ellipsoid": "WGS 84: a=6378137 m, 1/f=298.257223563, GM=3.986004418e14 m3/s2, omega=7.292115e-5 rad/s",
+  "grid": "0.5 degree, latitude +90 to -90, longitude -180 to +179.5",
+  "gravityDisturbance": "total model gravity minus normal gravity on WGS84 ellipsoid h=0; mGal; rounded to 0.1 mGal",
+  "geoid": "model equipotential surface relative to WGS84 ellipsoid, using boule.WGS84 reference potential; meters; rounded to 0.01 m",
+  "display": "interpolated model grid with centered color scales; potato radius displacement = N * visual exaggeration",
+  "limitation": "Global field is shown separately from the existing local normal-gravity and height calculation. Not observed Bouguer anomaly or terrain mass correction.",
+  "generator": "scripts/build-global-field.py"
+}
