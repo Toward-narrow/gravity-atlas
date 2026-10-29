@@ -136,11 +136,6 @@ python server.py --port 8000 --no-browser
 - NOAA / IAGA IGRF-14：[模型说明](https://www.ncei.noaa.gov/products/international-geomagnetic-reference-field)。
 - 地理轮廓采用 Natural Earth 公共领域数据。
 
----
-
-<sub>mj...mj❤Peter/EL</sub>
-
-
 ## 二维与三维重力正演工作区
 
 顶部选择“重力正演”，或直接打开 [forward.html](forward.html)。新增功能完全离线可用，原 MATLAB 程序保持原样。操作、算法与对照验证见 [正演工作区使用说明.md](正演工作区使用说明.md)。
@@ -153,3 +148,7 @@ python server.py --port 8000 --no-browser
 - MATLAB 独立入口：[matlab/gravity_forward_studio.m](matlab/gravity_forward_studio.m)；默认模型与网页一致，支持鼠标旋转与切片滑杆。
 
 运行 `node verify-forward.cjs` 可检查原程序基准、独立体积分、无限走向积分、球体解析解、符号、旋转、叠加与噪声复现。
+---
+
+<sub>mj...mj❤Peter/EL</sub>
+
