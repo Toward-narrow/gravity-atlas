@@ -147,7 +147,6 @@ python server.py --port 8000 --no-browser
 - 撤销/重做、自动保存、JSON 回读，CSV、高清组合 PNG、可直接运行的 MATLAB 脚本导出。
 - MATLAB 独立入口：[matlab/gravity_forward_studio.m](matlab/gravity_forward_studio.m)；默认模型与网页一致，支持鼠标旋转与切片滑杆。
 
-运行 `node verify-forward.cjs` 可检查原程序基准、独立体积分、无限走向积分、球体解析解、符号、旋转、叠加与噪声复现。
 ---
 
 <sub>mj...mj❤Peter/EL</sub>
