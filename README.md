@@ -1,26 +1,140 @@
-﻿# Gravity Atlas
+# 引力场 · Gravity Atlas
 
-An offline interactive Earth gravity and geomagnetism explorer.
+一个以离线交互为主的地球物理学习网页，包含重力实验、三维密度模型与测线设计、磁场时光机。通过调整模型与观测系统，比较地表重力响应、采样覆盖和解译效果。
 
-The new default Magnetic Time Machine integrates the 1980/2010 assignment,
-annual IGRF-14 models from 1900, official SV forecasts through 2030, and clearly
-marked trend scenarios through 2100. It includes a close-up Arctic map with
-the geographic pole, latitude circles, coastlines and smoothly moving true
-geomagnetic pole positions and subtle dipole surface-direction curves,
-clickable polar and D–I tracks, a moment chart, editable
-observation coordinates, and SVG/PNG/CSV exports. The original gravity explorer
-is available through the top navigation or `index.html#gravity`.
+## 快速开始
 
-The assignment uses the supplied coefficients, separately from revised IGRF-14.
-Local D/I fields use spherical harmonics through degree 13 in WGS-84 geodetic
-coordinates; geomagnetic poles use the degree-1 axis and geocentric latitude.
-There is no built-in pre-1900 historical model. The coefficient sandbox accepts
-user-provided coefficients for other years. See 使用说明.md for details.
+使用现代浏览器打开 [index.html](index.html)，通过顶部导航切换实验室：
 
-Open `index.html` in a modern browser to run it offline. The repository
-includes tiled NOAA ETOPO 2022 elevation data. Original GeoTIFF source
-files are excluded because of their size.
+| 入口 | 内容 |
+| --- | --- |
+| [重力实验](index.html#gravity) | 地球正常重力、局部密度异常、地形与全球重力场 |
+| [测线设计](index.html#survey) | 三维异常体、直接拖动测网、预算约束与平面重力图 |
+| [磁场时光机](index.html#magnetic) | 默认入口：磁矩、地磁北极迁移与 D–I 年代图 |
+
+核心计算及随仓库提供的数据可离线使用。需要本地 HTTP 服务时，可双击 Windows 下的 [启动实验室.cmd](启动实验室.cmd)，或在项目目录执行：
+
+```powershell
+python server.py
+```
+
+程序会打开浏览器。也可指定端口而不自动打开浏览器：
+
+```powershell
+python server.py --port 8000 --no-browser
+```
+
+## 三维密度模型与测线设计
+
+### 地下模型
+
+- 固定空间为 **2000 × 2000 × 1000 m**；东、北坐标各为 0～2000 m，地表深度为 0，向下为正。
+- 背景密度为 **2670 kg/m³**，支持同时编辑 1～3 个球体或长方体的位置、大小、中心埋深和密度差。
+- 三维视图支持鼠标或触摸拖动旋转、滚轮缩放和键盘操作。
+- 球体采用外部引力解析式；长方体采用 8×8×8 体元中点积分。正演只计算相对背景的密度差，重力异常向下为正，单位为 mGal。
+
+### 直接拖动测网
+
+左图展示当前测线系统，右图显示对应的重力平面图：
+
+- 拖中心移动测网，拖端部调整线长，拖侧边调整线距，拖圆弧手柄旋转。
+- 使用滑条调整点距、线距、线长、测线数量和方位。
+- 布点、三维测网、平面图、测线剖面、覆盖率和费用随编辑同步更新。
+- 到达预算、测区边界或最小间距限制时，停在最后一个有效位置，并提示原因；可反向拖动继续调整。
+- 点距和线距至少为 50 m，至少保留 2 条线、每线 2 点，实际线长至少为 100 m；这些几何限制独立于预算。
+- “保留副本继续试”用于保存当前布局并在副本上继续编辑；最多保留 16 组方案。“还原这组测网”同样受当前预算约束。
+
+测网画布支持方向键移动、Shift 加方向键旋转；滑条可用键盘调整。
+
+### 可调经费与测点单价
+
+页首提供总经费和单点价格输入框，默认值为：
+
+| 项目 | 默认值 |
+| --- | ---: |
+| 总测量经费 | 20000 元 |
+| 单个测点价格 | 200 元 |
+| 可用测点数上限 | 100 点 |
+
+修改后离开输入框或按 **Enter** 生效，也可一键恢复默认费用。可用点数按 `floor(总经费 / 单点价格)` 计算，金额以分为整数计费。
+
+- 经费减少或单价上涨使已有方案超支时，自动均衡减少两方向采样数，**保持实际覆盖范围、测网中心和方向不变**，相应更新点距、线距与测线条数。
+- 经费增加或单价下降时，保留已有布局，放宽预算限制，可继续拖动加密。
+- 方案费用、余额、场图和导出数据使用当前有效设置。
+- 两项金额均须为正数，最多两位小数，且预算至少足够布置最小的 4 点测网。无效输入保留上一组有效设置。
+- 费用仅按测点计取，交通、基点、高程测量及实际复测等成本未自动扣除；余额可能无法由整组规则测网完全用尽。
+
+### 十组方案与白底长图
+
+默认提供 **10 组点距、线距组合**，按点距、线距从小到大排列：点距为 75～222.22 m，线距为 75～250 m。每组为一个备选观测系统，默认费用下均不超过 20000 元。
+
+各组平面重力图采用白底、统一坐标范围与色标，标注观测点、坐标、**500 m 距离比例尺**和方案费用。支持切换测点插值、模型真值叠加布点、插值误差，亦可调整合成噪声。浅灰色表示测网外的未覆盖区域。
+
+可导出：
+
+- 十组方案的 **两列五行高清长图**，固定包含 10 幅观测点插值图。
+- 含模型真值参考的全部方案长图，或单组方案 PNG。
+- 全部测点 CSV，包含坐标、观测值、单价、方案总价、预算上限与可用点数上限。
+- 地下模型、测线参数、当前经费及计算结果 JSON。
+
+预生成文件以默认模型和默认费用为例；调整设置后，可通过网页导出当前结果：
+
+- [十组白底平面重力图](data/survey-ten-comparison.png)
+- [地下异常体白底三维模型图](data/survey-underground-model.png)
+- [默认十组测点 CSV](data/survey-ten-stations.csv)
+- [十组方案对比与详细布线建议](survey-report.html)
+
+### 读图与解译边界
+
+恢复图使用观测点的 IDW 距离四次方反比插值，仅限于各自测网矩形内，不向外推算。RMSE 在公共 51×51 网格中被各测网覆盖的节点上统计，**不同覆盖范围的 RMSE 不能直接作为全区优劣排名**。
+
+课堂照片中的点距经验式采用 `Δx≈h/3～h/2`；线长公式右侧被截断，暂按 `L≈3h～5h` 解释，h 取当前目标的中心埋深。经验式用于提示，不作为拖动的硬限制。
+
+当前提示利用已知模型检查目标中心覆盖和采样距离，仅用于教学。平面场插值不等于三维密度反演；真实解译仍需观测改正、背景场分离以及地质、密度或钻孔约束。详见 [测线设计说明](测线设计说明.md) 与 [完整布线分析](十组测线布置与解译建议.md)。
+
+## 重力实验与全球场
+
+重力实验保留 WGS-84 正常重力、位置与高度变化、自转实验，以及局部异常体等可选模型。
+
+仓库随附 NOAA ETOPO 2022 分块高程数据，以及 EIGEN-6C4 的重力扰动、大地水准面场图、夸张形变的“重力土豆”和地形/重力场联动对照。全球场图使用最高 179 阶球谐展开。
+
+地形用于设置观测高度；当地计算器保留独立的正常重力及高度模型，不会自动积分地形质量，也不会把全球场图直接叠加为当地实测重力异常。
+
+原始大型 GeoTIFF 文件不纳入仓库。全球场可通过 [scripts/build-global-field.py](scripts/build-global-field.py) 重建，需安装 pyshtools、numpy、Pillow 和 boule；原始模型下载到被忽略的 `data/source/` 目录。
+
+## 磁场时光机
+
+默认入口包含 1980/2010 作业计算、逐年磁场模型、北极区域迁移特写、磁矩趋势和 D–I 年代图，支持 SVG、PNG、CSV 导出。
+
+- 1900～2025 年采用 IGRF-14 历元模型及系数插值。
+- 2025～2030 年采用官方世变预测；2030～2100 年为明确标注的趋势假设。
+- 作业使用题目给定系数，与修订后的 IGRF-14 系数独立计算。
+- 当地 D/I 采用最高 13 阶球谐模型及 WGS-84 大地坐标；地磁北极按一阶磁轴与地球表面的交点计算，纬度为地心纬度。
+- 未内置 1900 年以前的历史模型；系数沙盒可接收用户提供的数据，不会把现代模型任意外推为历史观测。
+
+更多操作和模型说明见 [使用说明](使用说明.md)。
+
+## 主要文件
+
+| 文件 | 用途 |
+| --- | --- |
+| `index.html` | 网页入口 |
+| `survey-physics.js` | 密度正演、计费、采样、自动减点与拖动约束 |
+| `survey.js` | 测线实验室、预算输入、平面图、剖面和导出 |
+| `survey-designer.js` | 测网手柄、滑条与实时场图联动 |
+| `survey.css` | 测线实验室样式 |
+| `survey-report.html` | 默认十组方案的详细比较与布线理由 |
+| `magnetic.js` / `magnetic-physics.js` | 导航、磁场交互与计算 |
+| `server.py` | 可选本地服务 |
+| `data/` | 随附数据及示例图表 |
+
+## 数据来源
+
+- NOAA ETOPO 2022：[数据说明](https://www.ncei.noaa.gov/products/etopo-global-relief-model)。
+- GFZ EIGEN-6C4：Förste 等（2014），[DOI: 10.5880/icgem.2015.1](https://doi.org/10.5880/icgem.2015.1)，CC BY 4.0。
+- NOAA / IAGA IGRF-14：[模型说明](https://www.ncei.noaa.gov/products/international-geomagnetic-reference-field)。
+- 地理轮廓采用 Natural Earth 公共领域数据。
+
 ---
 
 <sub>mj...mj❤Peter/EL</sub>
-
