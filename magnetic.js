@@ -21,7 +21,7 @@ window.MagneticLab = (() => {
     <details class="panel mag-extra"><summary>数据来源、预测边界与读图说明</summary><p>IGRF-14 官方系数已随网页保存，可离线使用。1900–2025 每五年一个历元，其他年份在相邻系数间线性插值；2025–2030 使用发布的世变项。2030 年后，两种假设都从 2030 端点连续延伸，虚线代表外推，不能当成已知未来观测。未来上限设置为 2100 年。</p><p>D–I 年代图采用完整 IGRF 球谐展开（最高 13 阶），在所选 WGS-84 大地坐标和椭球高计算当地磁偏角 D、磁倾角 I。弯曲网格是一种展示坐标：D 是角度方向，I 是径向刻度。每个点来自系数计算，没有照抄参考图片中的历史曲线。D 以东偏为正，I 向下为正；当地水平场过弱时，D 不可稳定定义。</p><p>北极轨迹采用北极立体投影，指向符号表示地磁磁轴。磁矩趋势中的量纲为 A·m²。播放到末年自动停止；单步按钮和方向键可逐年探索。参考轮廓沿用 Natural Earth 公共领域数据。上方蓝色磁力线表示一阶偶极子磁场的地表方向投影，箭头指向地磁北极；实际磁场在北极附近还进入地球内部。线条密度不表示磁场强度。</p><div class="mag-source-links"><a href="https://www.ncei.noaa.gov/products/international-geomagnetic-reference-field" target="_blank" rel="noreferrer">NOAA / IAGA 模型 ↗</a><a href="data/igrf14coeffs.txt" target="_blank">本地原始系数 ↗</a><a href="https://www.ncei.noaa.gov/products/wandering-geomagnetic-poles" target="_blank" rel="noreferrer">地磁极定义 ↗</a></div></details>`;
   document.querySelector('main').prepend(section);
   const nav = document.createElement('nav'); nav.className = 'atlas-nav'; nav.setAttribute('aria-label', '实验室切换');
-  nav.innerHTML = '<button data-atlas-mode="gravity" aria-pressed="false">重力实验</button><button data-atlas-mode="survey" aria-pressed="false">测线设计</button><button data-atlas-mode="magnetic" aria-pressed="true">磁场时光机</button>';
+  nav.innerHTML = '<button data-atlas-mode="gravity" aria-pressed="false">重力实验</button><button data-atlas-mode="forward" aria-pressed="false">重力正演</button><button data-atlas-mode="survey" aria-pressed="false">测线设计</button><button data-atlas-mode="magnetic" aria-pressed="true">磁场时光机</button>';
   document.querySelector('header').insertBefore(nav, $m('theoryBtn'));
   function mode(name, persist = true) {
     document.body.dataset.atlas = name;
@@ -29,6 +29,10 @@ window.MagneticLab = (() => {
     footerText[0].textContent = name === 'magnetic' ? 'IGRF-14 · 磁场与重力实验 · 核心计算离线可用' : 'WGS‑84 + 多因素正演 · 核心计算离线可用';
     footerText[1].textContent = name === 'magnetic' ? '历史模型与趋势假设 · 2030 年后为非官方外推' : '参考场 + 可选近似模型，不等同于真实全球重力场。';
     document.querySelectorAll('[data-atlas-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.atlasMode === name)));
+    if (name === 'forward') {
+      footerText[0].textContent = '二维 / 三维重力正演 · 本地模型工作区';
+      footerText[1].textContent = '密度模型与合成重力异常 · 核心计算离线可用';
+    }
     if (name === 'survey') {
       footerText[0].textContent = '三维密度模型 · 预算约束测线设计 · 离线正演';
       footerText[1].textContent = '合成重力场与采样实验 · 固定 2000 × 2000 × 1000 m';
@@ -38,6 +42,7 @@ window.MagneticLab = (() => {
   }
   nav.addEventListener('click', e => {const b = e.target.closest('[data-atlas-mode]'); if (b) mode(b.dataset.atlasMode);});
   const routeMode = () => {
+    if (location.hash === '#forward') return 'forward';
     if (location.hash === '#gravity') return 'gravity';
     if (location.hash === '#survey' || location.hash.startsWith('#sv')) return 'survey';
     return 'magnetic';
